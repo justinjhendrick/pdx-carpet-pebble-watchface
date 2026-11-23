@@ -2,7 +2,7 @@
 #include "fonts.h"
 
 #define DEBUG_BBOX (false)
-#define DEBUG_TIME (true)
+#define DEBUG_TIME (false)
 #define BUFFER_LEN (40)
 #define FORCE_12H (false)
 
@@ -41,6 +41,7 @@ const int block_size = 6;
 const int blocks_per_cross = 11; // needs to be odd
 
 static void one_pdx(GContext* ctx, GRect bbox) {
+  debug_bbox(ctx, bbox);
   const int b = block_size;
   const int g = 1;
   const int s = b - 2 * g;
@@ -117,7 +118,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
     GColorRed
   );
   // downright dotted blue
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 2; i++) {
     int x = (6 + i) * b;
     fill_rect(
       ctx,
@@ -192,22 +193,29 @@ static void one_pdx(GContext* ctx, GRect bbox) {
 }
 
 static void many_pdx(GContext* ctx, GRect bbox) {
-  graphics_context_set_fill_color(ctx, GColorTiffanyBlue);
+  graphics_context_set_fill_color(ctx, GColorMediumSpringGreen);
   graphics_fill_rect(ctx, bbox, 0, GCornerNone);
   const int border = 4;
   const int cross_size = border + block_size * blocks_per_cross + border;
-  int init_x = bbox.origin.x - cross_size;
-  for (int y = bbox.origin.y; y < bbox.size.h; y += cross_size) {
-    for (int x = init_x; x < bbox.size.w; x += cross_size) {
+  int i = 0;
+  for (int y = bbox.origin.y - 2 * cross_size; y < bbox.size.h; y += cross_size) {
+    int j = 0;
+    for (int x = bbox.origin.x - 2 * cross_size; x < bbox.size.w; x += cross_size) {
       one_pdx(
         ctx,
         grect_inset(
-          GRect(x, y, cross_size, cross_size),
+          GRect(
+            x + i * cross_size * 3 / 8,
+            y + j * cross_size * 3 / 8,
+            cross_size,
+            cross_size
+          ),
           GEdgeInsets(border)
         )
       );
+      j++;
     }
-    init_x = -cross_size + (init_x + (cross_size * 3 / 8)) % cross_size;
+    i++;
   }
 }
 
