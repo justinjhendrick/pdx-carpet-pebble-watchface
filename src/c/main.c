@@ -193,7 +193,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
 }
 
 static void many_pdx(GContext* ctx, GRect bbox) {
-  graphics_context_set_fill_color(ctx, GColorJaegerGreen);
+  graphics_context_set_fill_color(ctx, GColorMediumSpringGreen);
   graphics_fill_rect(ctx, bbox, 0, GCornerNone);
   const int border = 4;
   const int cross_size = border + block_size * blocks_per_cross + border;
