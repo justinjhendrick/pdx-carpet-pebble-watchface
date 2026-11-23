@@ -1,18 +1,8 @@
-# Varv Pebble Watch Face
-
-https://apps.repebble.com/varv_693625b95434b00008eff112
+# PDX Carpet Pebble Watch Face
 
 ## Emery
 
-![screenshot](screenshots_emery_08xx.gif)
-
-## Aplite, Diorite, Flint
-
-![screenshot](screenshots_flint_08xx.gif)
-
-## Basalt
-
-![screenshot](screenshots_basalt_08xx.gif)
+![screenshot](screenshot_emery.png)
 
 ## License
 
