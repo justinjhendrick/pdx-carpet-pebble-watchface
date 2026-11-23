@@ -38,44 +38,157 @@ static void fill_rect(GContext* ctx, GPoint origin, GRect bbox, GColor col) {
   );
 }
 
+const int block_size = 6;
+const int blocks_per_cross = 17; // needs to be odd
+
 static void one_pdx(GContext* ctx, GRect bbox) {
-  int b = bbox.size.w / 10;
-  GRect inset = grect_inset(bbox, GEdgeInsets(b));
-  for (int x = 0; x < inset.size.w; x += b) {
+  debug_bbox(ctx, bbox);
+  const int b = block_size;
+  const int g = 1;
+  const int s = b - 2 * g;
+  // far left dot
+  fill_rect(
+    ctx,
+    bbox.origin,
+    GRect(
+      0,
+      8 * b + g,
+      s,
+      s
+    ),
+    GColorOxfordBlue
+  );
+  // left bar
+  fill_rect(
+    ctx,
+    bbox.origin,
+    GRect(
+      1 * b,
+      8 * b + g,
+      6 * b + s + g,
+      s
+    ),
+    GColorOxfordBlue
+  );
+  // right bar
+  fill_rect(
+    ctx,
+    bbox.origin,
+    GRect(
+      9 * b + g,
+      8 * b + g,
+      3 * b + s,
+      s
+    ),
+    GColorOxfordBlue
+  );
+  // down bar
+  fill_rect(
+    ctx,
+    bbox.origin,
+    GRect(
+      8 * b + g,
+      9 * b + g,
+      s,
+      7 * b + s
+    ),
+    GColorOxfordBlue
+  );
+  // center
+  fill_rect(
+    ctx,
+    bbox.origin,
+    GRect(
+      8 * b + g,
+      8 * b + g,
+      s,
+      s
+    ),
+    GColorOxfordBlue
+  );
+  // red above center
+  fill_rect(
+    ctx,
+    bbox.origin,
+    GRect(
+      8 * b + g,
+      7 * b + g,
+      s,
+      s
+    ),
+    GColorRed
+  );
+  // downright dotted blue
+  for (int i = 0; i < 3; i++) {
+    int x = 9 * b + i * (b * 4 / 3);
     fill_rect(
       ctx,
       bbox.origin,
       GRect(
-        x,
-        inset.size.h / 2,
-        b,
-        b
+        x + g,
+        x + g,
+        s,
+        s
       ),
       GColorOxfordBlue
     );
   }
-  for (int y = 0; y < inset.size.h; y += b) {
-    GColor col = GColorOxfordBlue;
-    int x = inset.size.w / 2;
-    GEdgeInsets insets = GEdgeInsets(0);
-    if (y < inset.size.h / 2) {
-      col = GColorBrilliantRose;
-      x -= b;
-      insets = GEdgeInsets(0, 0, 1, 0);
-    }
+  // downleft dotted blue
+  for (int i = 0; i < 3; i++) {
+    int x = i * b;
+    int y = 16 * b - x;
     fill_rect(
       ctx,
       bbox.origin,
-      grect_inset(
-        GRect(
-          x,
-          y,
-          b,
-          b
-        ),
-        insets
+      GRect(
+        x + g,
+        y + g,
+        s,
+        s
       ),
-      col
+      GColorOxfordBlue
+    );
+  }
+  // right purple dotted
+  for (int x = 13 * b; x < 17 * b; x += b) {
+    fill_rect(
+      ctx,
+      bbox.origin,
+      GRect(
+        x + g,
+        8 * b + g,
+        s,
+        s
+      ),
+      GColorVividViolet
+    );
+  }
+  // up pink dotted
+  for (int y = 0; y < 8 * b; y += b) {
+    fill_rect(
+      ctx,
+      bbox.origin,
+      GRect(
+        7 * b + g,
+        y + g,
+        s,
+        s
+      ),
+      GColorBrilliantRose
+    );
+  }
+  // down red dotted
+  for (int y = 14 * b; y < 17 * b; y += b) {
+    fill_rect(
+      ctx,
+      bbox.origin,
+      GRect(
+        9 * b + g,
+        y + g,
+        s,
+        s
+      ),
+      GColorRed
     );
   }
 }
@@ -83,14 +196,20 @@ static void one_pdx(GContext* ctx, GRect bbox) {
 static void many_pdx(GContext* ctx, GRect bbox) {
   graphics_context_set_fill_color(ctx, GColorTiffanyBlue);
   graphics_fill_rect(ctx, bbox, 0, GCornerNone);
-  int w = 40;
-  int h = 40;
-  int init_x = bbox.origin.x - w;
-  for (int y = bbox.origin.y; y < bbox.size.h; y += h) {
-    for (int x = init_x; x < bbox.size.w; x += w) {
-      one_pdx(ctx, GRect(x, y, w, h));
+  const int border = 4;
+  const int cross_size = border + block_size * blocks_per_cross + border;
+  int init_x = bbox.origin.x - cross_size;
+  for (int y = bbox.origin.y; y < bbox.size.h; y += cross_size) {
+    for (int x = init_x; x < bbox.size.w; x += cross_size) {
+      one_pdx(
+        ctx,
+        grect_inset(
+          GRect(x, y, cross_size, cross_size),
+          GEdgeInsets(border)
+        )
+      );
     }
-    init_x = (init_x + 30) % w - w;
+    init_x = (init_x + (cross_size * 3 / 4)) % cross_size - cross_size;
   }
 }
 
@@ -183,13 +302,13 @@ static void update_layer(Layer* layer, GContext* ctx) {
   hour_bbox.size.w = bounds.size.w * 6 / 20;
   hour_bbox.size.h = bounds.size.h;
   int hours = get_hours(now);
-  stack_digits(
-    ctx,
-    hours / 10,
-    hours % 10,
-    hour_bbox,
-    GAP
-  );
+  //stack_digits(
+  //  ctx,
+  //  hours / 10,
+  //  hours % 10,
+  //  hour_bbox,
+  //  GAP
+  //);
 
   // minutes
   GRect minute_bbox;
@@ -198,13 +317,13 @@ static void update_layer(Layer* layer, GContext* ctx) {
   minute_bbox.size.h = hour_bbox.size.h * 3 / 10;
   minute_bbox.origin.x = hour_bbox.origin.x + hour_bbox.size.w;
   minute_bbox.origin.y = hour_bbox.origin.y + minutes * (hour_bbox.size.h - minute_bbox.size.h) / 60;
-  draw_digits(
-    ctx,
-    minutes / 10,
-    minutes % 10,
-    minute_bbox,
-    GAP
-  );
+  //draw_digits(
+  //  ctx,
+  //  minutes / 10,
+  //  minutes % 10,
+  //  minute_bbox,
+  //  GAP
+  //);
 }
 
 static void window_load(Window* window) {
