@@ -1,0 +1,6 @@
+build/
+.vscode
+.lock-waf_linux_build
+node_modules
+*.swp
+*.png

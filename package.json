@@ -1,0 +1,42 @@
+{
+  "name": "varve2",
+  "author": "justinjhendrick",
+  "version": "1.0.0",
+  "keywords": [],
+  "private": false,
+  "dependencies": { },
+  "pebble": {
+    "displayName": "Varv2",
+    "uuid": "09dc0dda-d556-4d39-bb75-994db61c8eb8",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+      "emery"
+    ],
+    "watchapp": {
+      "watchface": true
+    },
+    "messageKeys": [],
+    "usesPermissions": [],
+    "resources": {
+      "media": [
+        {"name":  "ANTONIO_21", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[a-zA-Z0-9]", "type": "font" },
+        {"name":  "ANTONIO_52", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_56", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_60", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_64", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_68", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_72", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_76", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_80", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_84", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_88", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_92", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_96", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_100", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_104", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" },
+        {"name":  "ANTONIO_108", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" }
+      ]
+    }
+  }
+}
