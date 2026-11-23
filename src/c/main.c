@@ -264,25 +264,41 @@ static void update_layer(Layer* layer, GContext* ctx) {
 
   GRect bounds = layer_get_bounds(layer);
   many_pdx(ctx, bounds);
+  GRect inset = grect_inset(bounds, GEdgeInsets(bounds.size.w * 1 / 20));
 
   int hours = get_hours(now);
-  int minutes = get_minutes(now);
-  GRect time_bbox;
-  time_bbox.size.w = bounds.size.w * 18 / 20;
-  time_bbox.size.h = 80;
-  time_bbox.origin.x = bounds.origin.x + (bounds.size.w - time_bbox.size.w) / 2;
-  time_bbox.origin.y = bounds.origin.y + (bounds.size.h - time_bbox.size.h) / 2;
-  int nums[4] = {
+  GRect hour_bbox;
+  hour_bbox.size.w = inset.size.w / 2;
+  hour_bbox.size.h = 80;
+  hour_bbox.origin.x = inset.origin.x;
+  hour_bbox.origin.y = inset.origin.y;
+  int hour_vals[2] = {
     hours / 10,
     hours % 10,
+  };
+  draw_digits(
+    ctx,
+    hour_vals,
+    2,
+    hour_bbox,
+    5
+  );
+
+  int minutes = get_minutes(now);
+  GRect minute_bbox;
+  minute_bbox.size.w = inset.size.w / 2;
+  minute_bbox.size.h = 80;
+  minute_bbox.origin.x = inset.origin.x + hour_bbox.size.w;
+  minute_bbox.origin.y = inset.origin.y + inset.size.h - hour_bbox.size.h;
+  int minute_vals[2] = {
     minutes / 10,
     minutes % 10,
   };
   draw_digits(
     ctx,
-    nums,
-    4,
-    time_bbox,
+    minute_vals,
+    2,
+    minute_bbox,
     5
   );
 }
