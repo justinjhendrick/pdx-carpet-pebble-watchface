@@ -1,7 +1,7 @@
 #include <pebble.h>
 #include "fonts.h"
 
-#define DEBUG_BBOX (true)
+#define DEBUG_BBOX (false)
 #define DEBUG_TIME (false)
 #define FORCE_12H (false)
 #define BUFFER_LEN (40)
@@ -39,7 +39,7 @@ static void fill_rect(GContext* ctx, GPoint origin, GRect bbox, GColor col) {
 }
 
 const int block_size = 6;
-const int blocks_per_cross = 17; // needs to be odd
+const int blocks_per_cross = 11; // needs to be odd
 
 static void one_pdx(GContext* ctx, GRect bbox) {
   debug_bbox(ctx, bbox);
@@ -52,7 +52,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
     bbox.origin,
     GRect(
       0,
-      8 * b + g,
+      5 * b + g,
       s,
       s
     ),
@@ -64,8 +64,8 @@ static void one_pdx(GContext* ctx, GRect bbox) {
     bbox.origin,
     GRect(
       1 * b,
-      8 * b + g,
-      6 * b + s + g,
+      5 * b + g,
+      3 * b + s + g,
       s
     ),
     GColorOxfordBlue
@@ -75,9 +75,9 @@ static void one_pdx(GContext* ctx, GRect bbox) {
     ctx,
     bbox.origin,
     GRect(
-      9 * b + g,
-      8 * b + g,
-      3 * b + s,
+      6 * b + g,
+      5 * b + g,
+      2 * b + s,
       s
     ),
     GColorOxfordBlue
@@ -87,10 +87,10 @@ static void one_pdx(GContext* ctx, GRect bbox) {
     ctx,
     bbox.origin,
     GRect(
-      8 * b + g,
-      9 * b + g,
+      5 * b + g,
+      6 * b + g,
       s,
-      7 * b + s
+      4 * b + s
     ),
     GColorOxfordBlue
   );
@@ -99,8 +99,8 @@ static void one_pdx(GContext* ctx, GRect bbox) {
     ctx,
     bbox.origin,
     GRect(
-      8 * b + g,
-      8 * b + g,
+      5 * b + g,
+      5 * b + g,
       s,
       s
     ),
@@ -111,8 +111,8 @@ static void one_pdx(GContext* ctx, GRect bbox) {
     ctx,
     bbox.origin,
     GRect(
-      8 * b + g,
-      7 * b + g,
+      5 * b + g,
+      4 * b + g,
       s,
       s
     ),
@@ -120,7 +120,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
   );
   // downright dotted blue
   for (int i = 0; i < 3; i++) {
-    int x = 9 * b + i * (b * 4 / 3);
+    int x = (6 + i) * b;
     fill_rect(
       ctx,
       bbox.origin,
@@ -136,7 +136,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
   // downleft dotted blue
   for (int i = 0; i < 3; i++) {
     int x = i * b;
-    int y = 16 * b - x;
+    int y = 10 * b - x;
     fill_rect(
       ctx,
       bbox.origin,
@@ -150,13 +150,13 @@ static void one_pdx(GContext* ctx, GRect bbox) {
     );
   }
   // right purple dotted
-  for (int x = 13 * b; x < 17 * b; x += b) {
+  for (int x = 9 * b; x < 11 * b; x += b) {
     fill_rect(
       ctx,
       bbox.origin,
       GRect(
         x + g,
-        8 * b + g,
+        5 * b + g,
         s,
         s
       ),
@@ -164,12 +164,12 @@ static void one_pdx(GContext* ctx, GRect bbox) {
     );
   }
   // up pink dotted
-  for (int y = 0; y < 8 * b; y += b) {
+  for (int y = 0; y < 5 * b; y += b) {
     fill_rect(
       ctx,
       bbox.origin,
       GRect(
-        7 * b + g,
+        4 * b + g,
         y + g,
         s,
         s
@@ -178,12 +178,12 @@ static void one_pdx(GContext* ctx, GRect bbox) {
     );
   }
   // down red dotted
-  for (int y = 14 * b; y < 17 * b; y += b) {
+  for (int y = 9 * b; y < 11 * b; y += b) {
     fill_rect(
       ctx,
       bbox.origin,
       GRect(
-        9 * b + g,
+        6 * b + g,
         y + g,
         s,
         s
@@ -209,7 +209,7 @@ static void many_pdx(GContext* ctx, GRect bbox) {
         )
       );
     }
-    init_x = (init_x + (cross_size * 3 / 4)) % cross_size - cross_size;
+    init_x = -cross_size + (init_x + (cross_size * 3 / 8)) % cross_size;
   }
 }
 
@@ -302,13 +302,13 @@ static void update_layer(Layer* layer, GContext* ctx) {
   hour_bbox.size.w = bounds.size.w * 6 / 20;
   hour_bbox.size.h = bounds.size.h;
   int hours = get_hours(now);
-  //stack_digits(
-  //  ctx,
-  //  hours / 10,
-  //  hours % 10,
-  //  hour_bbox,
-  //  GAP
-  //);
+  stack_digits(
+    ctx,
+    hours / 10,
+    hours % 10,
+    hour_bbox,
+    GAP
+  );
 
   // minutes
   GRect minute_bbox;
@@ -317,13 +317,13 @@ static void update_layer(Layer* layer, GContext* ctx) {
   minute_bbox.size.h = hour_bbox.size.h * 3 / 10;
   minute_bbox.origin.x = hour_bbox.origin.x + hour_bbox.size.w;
   minute_bbox.origin.y = hour_bbox.origin.y + minutes * (hour_bbox.size.h - minute_bbox.size.h) / 60;
-  //draw_digits(
-  //  ctx,
-  //  minutes / 10,
-  //  minutes % 10,
-  //  minute_bbox,
-  //  GAP
-  //);
+  draw_digits(
+    ctx,
+    minutes / 10,
+    minutes % 10,
+    minute_bbox,
+    GAP
+  );
 }
 
 static void window_load(Window* window) {
