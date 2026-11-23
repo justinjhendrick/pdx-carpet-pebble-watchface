@@ -1,10 +1,10 @@
 #include <pebble.h>
 #include "fonts.h"
 
-#define DEBUG_BBOX (true)
-#define DEBUG_TIME (false)
-#define FORCE_12H (false)
+#define DEBUG_BBOX (false)
+#define DEBUG_TIME (true)
 #define BUFFER_LEN (40)
+#define FORCE_12H (false)
 
 #define DATE_HEIGHT (40)
 
@@ -229,7 +229,9 @@ static void draw_digits(GContext* ctx, int* vals, int len, GRect bbox, int gap) 
   for (int i = 0; i < len; i++) {
     char_bbox.origin.x = gap + bbox.origin.x + (char_bbox.size.w + gap) * i;
     char_bbox.origin.y = bbox.origin.y;
-    snprintf(s_buffer, BUFFER_LEN, "%d", vals[i]);
+    int val = vals[i];
+    if (val < 0 || val >= 10) { continue; }
+    snprintf(s_buffer, BUFFER_LEN, "%d", val);
     draw_buf(ctx, s_buffer, char_bbox);
   }
 }
@@ -238,11 +240,7 @@ static int get_hours(struct tm* now) {
 #ifdef HOUR_OVERRIDE
   return HOUR_OVERRIDE;
 #else
-  int hours = now->tm_hour;
-  if (DEBUG_TIME) {
-    hours = now->tm_sec % 24;
-  }
-  return hours;
+  return now->tm_hour;
 #endif
 }
 
@@ -250,30 +248,46 @@ static int get_minutes(struct tm* now) {
 #ifdef MINUTE_OVERRIDE
   return MINUTE_OVERRIDE;
 #else
-  int minutes = now->tm_min;
-  if (DEBUG_TIME) {
-    minutes = now->tm_sec;
-  }
-  return minutes;
+  return now->tm_min;
 #endif
 }
 
 static void update_layer(Layer* layer, GContext* ctx) {
-  time_t temp = time(NULL);
-  struct tm* now = localtime(&temp);
+  time_t timestamp = time(NULL);
+  if (DEBUG_TIME) {
+    static time_t extra = 0;
+    extra += 59;
+    timestamp += extra;
+  }
+  struct tm* now = localtime(&timestamp);
 
   GRect bounds = layer_get_bounds(layer);
   many_pdx(ctx, bounds);
   GRect inset = grect_inset(bounds, GEdgeInsets(bounds.size.w * 1 / 20));
 
+  GSize sz = GSize(inset.size.w / 2, 80);
+  int vertical_space = inset.size.h - sz.h;
+
   int hours = get_hours(now);
   GRect hour_bbox;
-  hour_bbox.size.w = inset.size.w / 2;
-  hour_bbox.size.h = 80;
+  hour_bbox.size = sz;
   hour_bbox.origin.x = inset.origin.x;
-  hour_bbox.origin.y = inset.origin.y;
+  hour_bbox.origin.y = inset.origin.y + vertical_space * hours / 24;
+
+  // do this after the vertical space calculation because we still want noon in the middle
+  // and midnight on top & bottom.
+  bool include_tens_hour = true;
+  if (!clock_is_24h_style()) {
+    hours = hours % 12;
+    if (hours == 0) {
+      hours = 12;
+    }
+    if (hours < 10) {
+      include_tens_hour = false;
+    }
+  }
   int hour_vals[2] = {
-    hours / 10,
+    include_tens_hour ? hours / 10 : -1,
     hours % 10,
   };
   draw_digits(
@@ -286,10 +300,9 @@ static void update_layer(Layer* layer, GContext* ctx) {
 
   int minutes = get_minutes(now);
   GRect minute_bbox;
-  minute_bbox.size.w = inset.size.w / 2;
-  minute_bbox.size.h = 80;
+  minute_bbox.size = sz;
   minute_bbox.origin.x = inset.origin.x + hour_bbox.size.w;
-  minute_bbox.origin.y = inset.origin.y + inset.size.h - hour_bbox.size.h;
+  minute_bbox.origin.y = inset.origin.y + vertical_space * minutes / 60;
   int minute_vals[2] = {
     minutes / 10,
     minutes % 10,
