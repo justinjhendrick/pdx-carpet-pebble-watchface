@@ -1,13 +1,12 @@
 #include <pebble.h>
 #include "fonts.h"
 
-#define DEBUG_BBOX (false)
+#define DEBUG_BBOX (true)
 #define DEBUG_TIME (false)
 #define FORCE_12H (false)
 #define BUFFER_LEN (40)
 
 #define DATE_HEIGHT (40)
-#define GAP (5)
 
 static Window* s_window;
 static Layer* s_layer;
@@ -42,7 +41,6 @@ const int block_size = 6;
 const int blocks_per_cross = 11; // needs to be odd
 
 static void one_pdx(GContext* ctx, GRect bbox) {
-  debug_bbox(ctx, bbox);
   const int b = block_size;
   const int g = 1;
   const int s = b - 2 * g;
@@ -219,47 +217,21 @@ static void draw_buf(GContext* ctx, char* buf, GRect bbox) {
 
   graphics_context_set_text_color(ctx, GColorBlack);
   GFont font = get_font(bbox.size.h);
-  draw_text_shifted(ctx, buf, bbox, font, 4);
+  draw_text_shifted(ctx, buf, bbox, font, 5);
 }
 
-static void stack_digits(GContext* ctx, int c1, int c2, GRect bbox, int gap) {
-  // G c G c G
-  int char_height = (bbox.size.h - 3 * gap) / 2;
-  GRect upper;
-  upper.origin.y = bbox.origin.y + gap;
-  upper.origin.x = bbox.origin.x;
-  upper.size.h = char_height;
-  upper.size.w = bbox.size.w;
-  snprintf(s_buffer, BUFFER_LEN, "%d", c1);
-  draw_buf(ctx, s_buffer, upper);
+static void draw_digits(GContext* ctx, int* vals, int len, GRect bbox, int gap) {
+  int char_width = (bbox.size.w - (len + 1) * gap) / len;
+  GRect char_bbox;
+  char_bbox.size.w = char_width;
+  char_bbox.size.h = bbox.size.h;
 
-  GRect lower;
-  lower.origin.y = upper.origin.y + char_height + gap;
-  lower.origin.x = upper.origin.x;
-  lower.size.h = char_height;
-  lower.size.w = bbox.size.w;
-  snprintf(s_buffer, BUFFER_LEN, "%d", c2);
-  draw_buf(ctx, s_buffer, lower);
-}
-
-static void draw_digits(GContext* ctx, int c1, int c2, GRect bbox, int gap) {
-  // G c G c
-  int char_width = (bbox.size.w - 2 * gap) / 2;
-  GRect left;
-  left.origin.x = bbox.origin.x + gap;
-  left.origin.y = bbox.origin.y;
-  left.size.w = char_width;
-  left.size.h = bbox.size.h;
-  snprintf(s_buffer, BUFFER_LEN, "%d", c1);
-  draw_buf(ctx, s_buffer, left);
-
-  GRect right;
-  right.origin.x = left.origin.x + char_width + gap;
-  right.origin.y = left.origin.y;
-  right.size.w = char_width;
-  right.size.h = bbox.size.h;
-  snprintf(s_buffer, BUFFER_LEN, "%d", c2);
-  draw_buf(ctx, s_buffer, right);
+  for (int i = 0; i < len; i++) {
+    char_bbox.origin.x = gap + bbox.origin.x + (char_bbox.size.w + gap) * i;
+    char_bbox.origin.y = bbox.origin.y;
+    snprintf(s_buffer, BUFFER_LEN, "%d", vals[i]);
+    draw_buf(ctx, s_buffer, char_bbox);
+  }
 }
 
 static int get_hours(struct tm* now) {
@@ -293,36 +265,25 @@ static void update_layer(Layer* layer, GContext* ctx) {
   GRect bounds = layer_get_bounds(layer);
   many_pdx(ctx, bounds);
 
-  int leftover = bounds.size.w * 4 / 20;
-
-  // hours
-  GRect hour_bbox;
-  hour_bbox.origin.x = bounds.origin.x + leftover / 2;
-  hour_bbox.origin.y = bounds.origin.y;
-  hour_bbox.size.w = bounds.size.w * 6 / 20;
-  hour_bbox.size.h = bounds.size.h;
   int hours = get_hours(now);
-  stack_digits(
-    ctx,
+  int minutes = get_minutes(now);
+  GRect time_bbox;
+  time_bbox.size.w = bounds.size.w * 18 / 20;
+  time_bbox.size.h = 80;
+  time_bbox.origin.x = bounds.origin.x + (bounds.size.w - time_bbox.size.w) / 2;
+  time_bbox.origin.y = bounds.origin.y + (bounds.size.h - time_bbox.size.h) / 2;
+  int nums[4] = {
     hours / 10,
     hours % 10,
-    hour_bbox,
-    GAP
-  );
-
-  // minutes
-  GRect minute_bbox;
-  int minutes = get_minutes(now);
-  minute_bbox.size.w = bounds.size.w * 10 / 20;
-  minute_bbox.size.h = hour_bbox.size.h * 3 / 10;
-  minute_bbox.origin.x = hour_bbox.origin.x + hour_bbox.size.w;
-  minute_bbox.origin.y = hour_bbox.origin.y + minutes * (hour_bbox.size.h - minute_bbox.size.h) / 60;
-  draw_digits(
-    ctx,
     minutes / 10,
     minutes % 10,
-    minute_bbox,
-    GAP
+  };
+  draw_digits(
+    ctx,
+    nums,
+    4,
+    time_bbox,
+    5
   );
 }
 
