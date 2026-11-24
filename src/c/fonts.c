@@ -5,7 +5,7 @@
 // 0 is the default icon.
 #define FIRST_RESOURCE_ID (1)
 // Make sure this matches package.json
-#define NUM_FONTS (1)
+#define NUM_FONTS (2)
 
 #define DEBUG (false)
 

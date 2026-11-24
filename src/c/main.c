@@ -224,8 +224,8 @@ static void draw_buf(GContext* ctx, char* buf, GRect bbox) {
   graphics_fill_rect(ctx, bbox, 10, GCornersAll);
 
   graphics_context_set_text_color(ctx, GColorBlack);
-  GFont font = get_font(bbox.size.h);
-  draw_text_shifted(ctx, buf, bbox, font, 5);
+  GFont font = get_font(bbox.size.h - 4);
+  draw_text_shifted(ctx, buf, bbox, font, bbox.size.h / 20);
 }
 
 static void draw_digits(GContext* ctx, int* vals, int len, GRect bbox, int gap) {
@@ -269,18 +269,18 @@ static void update_layer(Layer* layer, GContext* ctx) {
   }
   struct tm* now = localtime(&timestamp);
 
-  GRect bounds = layer_get_bounds(layer);
+  GRect bounds = layer_get_unobstructed_bounds(layer);
   many_pdx(ctx, bounds);
-  GRect inset = grect_inset(bounds, GEdgeInsets(bounds.size.w * 1 / 20));
+  GRect inset = grect_inset(bounds, GEdgeInsets(bounds.size.w * 1 / 40));
 
-  GSize sz = GSize(inset.size.w / 2, 80);
+  GSize sz = GSize(inset.size.w / 2, inset.size.h * 200 / 545);
   int vertical_space = inset.size.h - sz.h;
 
   int hours = get_hours(now);
   GRect hour_bbox;
   hour_bbox.size = sz;
   hour_bbox.origin.x = inset.origin.x;
-  hour_bbox.origin.y = inset.origin.y + vertical_space * hours / 24;
+  hour_bbox.origin.y = inset.origin.y + vertical_space * hours / 23;
 
   // do this after the vertical space calculation because we still want noon in the middle
   // and midnight on top & bottom.
@@ -310,7 +310,7 @@ static void update_layer(Layer* layer, GContext* ctx) {
   GRect minute_bbox;
   minute_bbox.size = sz;
   minute_bbox.origin.x = inset.origin.x + hour_bbox.size.w;
-  minute_bbox.origin.y = inset.origin.y + vertical_space * minutes / 60;
+  minute_bbox.origin.y = inset.origin.y + vertical_space * minutes / 59;
   int minute_vals[2] = {
     minutes / 10,
     minutes % 10,
