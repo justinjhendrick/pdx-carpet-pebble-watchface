@@ -4,7 +4,7 @@
 #define DEBUG_BBOX (false)
 #define DEBUG_TIME (false)
 #define BUFFER_LEN (40)
-#define FORCE_12H (false)
+#define ROUND (PBL_IF_ROUND_ELSE(true, false))
 
 #define DATE_HEIGHT (40)
 
@@ -269,9 +269,19 @@ static void update_layer(Layer* layer, GContext* ctx) {
   }
   struct tm* now = localtime(&timestamp);
 
+  GRect full_bounds = layer_get_bounds(layer);
+  many_pdx(ctx, full_bounds);
+
   GRect bounds = layer_get_unobstructed_bounds(layer);
-  many_pdx(ctx, bounds);
-  GRect inset = grect_inset(bounds, GEdgeInsets(bounds.size.w * 1 / 40));
+#if ROUND
+  int lr = (bounds.size.w - 200) / 2;
+  int tb = (bounds.size.h - 228) / 2;
+  if (lr < 0) { lr = 0; }
+  if (tb < 0) { tb = 0; }
+  bounds = grect_inset(bounds, GEdgeInsets(tb, lr, tb, lr));
+#endif
+
+  GRect inset = grect_inset(bounds, GEdgeInsets(5));
 
   GSize sz = GSize(inset.size.w / 2, inset.size.h * 200 / 545);
   int vertical_space = inset.size.h - sz.h;
