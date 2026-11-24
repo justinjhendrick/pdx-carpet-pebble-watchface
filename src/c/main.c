@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "fonts.h"
+#include "settings.h"
 
 #define DEBUG_BBOX (false)
 #define DEBUG_TIME (false)
@@ -54,7 +55,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
       s,
       s
     ),
-    GColorOxfordBlue
+    color_carpet_blue
   );
   // left bar
   fill_rect(
@@ -66,7 +67,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
       3 * b + s + g,
       s
     ),
-    GColorOxfordBlue
+    color_carpet_blue
   );
   // right bar
   fill_rect(
@@ -78,7 +79,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
       2 * b + s,
       s
     ),
-    GColorOxfordBlue
+    color_carpet_blue
   );
   // down bar
   fill_rect(
@@ -90,7 +91,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
       s,
       4 * b + s
     ),
-    GColorOxfordBlue
+    color_carpet_blue
   );
   // center
   fill_rect(
@@ -102,7 +103,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
       s,
       s
     ),
-    GColorOxfordBlue
+    color_carpet_blue
   );
   // red above center
   fill_rect(
@@ -114,7 +115,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
       s,
       s
     ),
-    GColorRed
+    color_carpet_red
   );
   // downright dotted blue
   for (int i = 0; i < 2; i++) {
@@ -128,7 +129,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
         s,
         s
       ),
-      GColorOxfordBlue
+      color_carpet_blue
     );
   }
   // downleft dotted blue
@@ -144,7 +145,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
         s,
         s
       ),
-      GColorOxfordBlue
+      color_carpet_blue
     );
   }
   // right purple dotted
@@ -158,7 +159,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
         s,
         s
       ),
-      GColorVividViolet
+      color_carpet_purple
     );
   }
   // up pink dotted
@@ -172,7 +173,7 @@ static void one_pdx(GContext* ctx, GRect bbox) {
         s,
         s
       ),
-      GColorBrilliantRose
+      color_carpet_pink
     );
   }
   // down red dotted
@@ -186,13 +187,13 @@ static void one_pdx(GContext* ctx, GRect bbox) {
         s,
         s
       ),
-      GColorRed
+      color_carpet_red
     );
   }
 }
 
 static void many_pdx(GContext* ctx, GRect bbox) {
-  graphics_context_set_fill_color(ctx, GColorMediumSpringGreen);
+  graphics_context_set_fill_color(ctx, color_carpet_teal);
   graphics_fill_rect(ctx, bbox, 0, GCornerNone);
   const int border = 4;
   const int cross_size = border + block_size * blocks_per_cross + border;
@@ -219,10 +220,10 @@ static void many_pdx(GContext* ctx, GRect bbox) {
 }
 
 static void draw_buf(GContext* ctx, char* buf, GRect bbox) {
-  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_context_set_fill_color(ctx, color_text_bg);
   graphics_fill_rect(ctx, bbox, 10, GCornersAll);
 
-  graphics_context_set_text_color(ctx, GColorBlack);
+  graphics_context_set_text_color(ctx, color_text_fg);
   GFont font = get_font(bbox.size.h - 4);
   draw_text_shifted(ctx, buf, bbox, font, bbox.size.h / 20);
 }
@@ -295,7 +296,11 @@ static void update_layer(Layer* layer, GContext* ctx) {
   GRect hour_bbox;
   hour_bbox.size = sz;
   hour_bbox.origin.x = inset.origin.x;
-  hour_bbox.origin.y = inset.origin.y + vertical_space * hours / 23;
+  if (enable_hour_movement) {
+    hour_bbox.origin.y = inset.origin.y + vertical_space * hours / 23;
+  } else {
+    hour_bbox.origin.y = inset.origin.y + vertical_space / 2;
+  }
 
   // do this after the vertical space calculation because we still want noon in the middle
   // and midnight on top & bottom.
@@ -325,7 +330,11 @@ static void update_layer(Layer* layer, GContext* ctx) {
   GRect minute_bbox;
   minute_bbox.size = sz;
   minute_bbox.origin.x = inset.origin.x + hour_bbox.size.w;
-  minute_bbox.origin.y = inset.origin.y + vertical_space * minutes / 59;
+  if (enable_minute_movement) {
+    minute_bbox.origin.y = inset.origin.y + vertical_space * minutes / 59;
+  } else {
+    minute_bbox.origin.y = inset.origin.y + vertical_space / 2;
+  }
   int minute_vals[2] = {
     minutes / 10,
     minutes % 10,
@@ -354,11 +363,17 @@ static void window_unload(Window* window) {
   }
 }
 
-static void tick_handler(struct tm* now, TimeUnits unitchanged) {
+void mark_dirty() {
   if (s_layer) layer_mark_dirty(s_layer);
 }
 
+static void tick_handler(struct tm* now, TimeUnits unitchanged) {
+  mark_dirty();
+}
+
 static void init(void) {
+  app_message_set_context(&mark_dirty);
+  init_settings();
   init_fonts();
   s_window = window_create();
   window_set_window_handlers(s_window, (WindowHandlers) {

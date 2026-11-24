@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "keywords": [],
   "private": false,
-  "dependencies": { },
+  "dependencies": {
+    "@rebble/clay": "^1.0.8"
+  },
   "pebble": {
     "displayName": "PDX Carpet",
     "uuid": "09dc0dda-d556-4d39-bb75-994db61c8eb8",
@@ -17,11 +19,26 @@
     "watchapp": {
       "watchface": true
     },
-    "messageKeys": [],
+    "messageKeys": [
+      "color_carpet_blue",
+      "color_carpet_pink",
+      "color_carpet_purple",
+      "color_carpet_red",
+      "color_carpet_teal",
+      "color_text_bg",
+      "color_text_fg",
+      "enable_hour_movement",
+      "enable_minute_movement"
+    ],
     "usesPermissions": [],
     "resources": {
       "media": [
-        {"name":  "ANTONIO_76", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" }
+        {
+          "name": "ANTONIO_76",
+          "file": "fonts/Antonio-Regular.ttf",
+          "characterRegex": "[0-9]",
+          "type": "font"
+        }
       ]
     }
   }

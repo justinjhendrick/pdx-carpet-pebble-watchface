@@ -1,0 +1,25 @@
+[
+  {
+    "type": "section",
+    "items": [
+      {"type": "heading", "defaultValue": "Colors"},
+      {"type": "color", "messageKey": "color_carpet_teal",    "defaultValue": "00FFAA", "label": "Carpet Background" },
+      {"type": "color", "messageKey": "color_carpet_blue",    "defaultValue": "000055", "label": "Carpet Primary" },
+      {"type": "color", "messageKey": "color_carpet_red",     "defaultValue": "FF0000", "label": "Carpet Accent 1" },
+      {"type": "color", "messageKey": "color_carpet_pink",    "defaultValue": "FF55AA", "label": "Carpet Accent 2" },
+      {"type": "color", "messageKey": "color_carpet_purple",  "defaultValue": "AA00FF", "label": "Carpet Accent 3" },
+      {"type": "color", "messageKey": "color_text_bg",        "defaultValue": "FFFFFF", "label": "Text Background" },
+      {"type": "color", "messageKey": "color_text_fg",        "defaultValue": "000000", "label": "Text Foreground" }
+    ]
+  },
+  {
+    "type": "section",
+    "items": [
+      {"type": "heading", "defaultValue": "Behavior"},
+      {"type": "toggle", "messageKey": "enable_hour_movement",   "defaultValue": true, "label": "Vertical Movement for Hours" },
+      {"type": "toggle", "messageKey": "enable_minute_movement", "defaultValue": true, "label": "Vertical Movement for Minutes" }
+    ]
+  },
+  { "type": "submit", "defaultValue": "Save Settings" }
+]
+
