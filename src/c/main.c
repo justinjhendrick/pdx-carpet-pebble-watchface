@@ -41,7 +41,6 @@ const int block_size = 6;
 const int blocks_per_cross = 11; // needs to be odd
 
 static void one_pdx(GContext* ctx, GRect bbox) {
-  debug_bbox(ctx, bbox);
   const int b = block_size;
   const int g = 1;
   const int s = b - 2 * g;
@@ -274,16 +273,22 @@ static void update_layer(Layer* layer, GContext* ctx) {
 
   GRect bounds = layer_get_unobstructed_bounds(layer);
 #if ROUND
-  int lr = (bounds.size.w - 200) / 2;
-  int tb = (bounds.size.h - 228) / 2;
-  if (lr < 0) { lr = 0; }
-  if (tb < 0) { tb = 0; }
-  bounds = grect_inset(bounds, GEdgeInsets(tb, lr, tb, lr));
+  int top = 35;
+  int right = 35;
+  int bot = 35;
+  int left = 35;
+  bool timeline_quick_view = bounds.size.h < full_bounds.size.h;
+  if (timeline_quick_view) {
+    bot = 5;
+  }
+  GRect inset = grect_inset(bounds, GEdgeInsets(top, right, bot, left));
+#else
+  GRect inset = grect_inset(bounds, GEdgeInsets(5));
 #endif
 
-  GRect inset = grect_inset(bounds, GEdgeInsets(5));
+  debug_bbox(ctx, inset);
 
-  GSize sz = GSize(inset.size.w / 2, inset.size.h * 200 / 545);
+  GSize sz = GSize(inset.size.w / 2, 80);
   int vertical_space = inset.size.h - sz.h;
 
   int hours = get_hours(now);

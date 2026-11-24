@@ -21,8 +21,6 @@
     "usesPermissions": [],
     "resources": {
       "media": [
-        {"name":  "ANTONIO_51", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font", "targetPlatforms": ["gabbro"] },
-        {"name":  "ANTONIO_54", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font", "targetPlatforms": ["emery"] },
         {"name":  "ANTONIO_76", "file": "fonts/Antonio-Regular.ttf", "characterRegex": "[0-9]", "type": "font" }
       ]
     }
