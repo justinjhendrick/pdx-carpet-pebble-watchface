@@ -16,7 +16,7 @@ Thanks to Vernon Adams for the Antonio Font
 
 ## Gabbro
 
-![screenshot](screenshot_gabbro.gif)
+![screenshot](screenshots_gabbro.gif)
 
 ## License
 
