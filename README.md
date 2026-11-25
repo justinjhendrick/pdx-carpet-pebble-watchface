@@ -1,5 +1,15 @@
 # PDX Carpet Pebble Watch Face
 
+Featuring the iconic carpet pattern from the Portland Airport.
+So Portlanders can bring a piece of home anywhere they go.
+
+Configurable:
+* Color Scheme
+* Vertical movement for hours and minutes (or fixed in the center)
+
+
+Thanks to Vernon Adams for the Antonio Font
+
 ## Emery
 
 ![screenshot](screenshots_emery.gif)
@@ -12,7 +22,7 @@
 
 [![CC BY-SA 4.0][cc-by-sa-shield]][cc-by-sa]
 
-This work is licensed under a
+This work (except fonts) is licensed under a
 [Creative Commons Attribution-ShareAlike 4.0 International License][cc-by-sa].
 
 [![CC BY-SA 4.0][cc-by-sa-image]][cc-by-sa]
