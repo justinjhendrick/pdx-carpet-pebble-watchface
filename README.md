@@ -2,7 +2,11 @@
 
 ## Emery
 
-![screenshot](screenshot_emery.png)
+![screenshot](screenshots_emery.gif)
+
+## Gabbro
+
+![screenshot](screenshot_gabbro.gif)
 
 ## License
 
