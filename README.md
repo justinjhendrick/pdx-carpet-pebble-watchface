@@ -1,5 +1,7 @@
 # PDX Carpet Pebble Watch Face
 
+https://apps.repebble.com/pdx-carpet_2a5d2a9010594a969941e908
+
 Featuring the iconic carpet pattern from the Portland Airport.
 So Portlanders can bring a piece of home anywhere they go.
 
